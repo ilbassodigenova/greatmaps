@@ -66,6 +66,9 @@ namespace GMap.NET.Internals
             bool isSystem = false;
             try
             {
+#if NETSTANDARD
+                isSystem = false;
+#else
                 using (var identity = System.Security.Principal.WindowsIdentity.GetCurrent())
                 {
                     if (identity != null)
@@ -73,6 +76,7 @@ namespace GMap.NET.Internals
                         isSystem = identity.IsSystem;
                     }
                 }
+#endif 
             }
             catch (Exception ex)
             {

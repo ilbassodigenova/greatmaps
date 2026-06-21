@@ -7,7 +7,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using GMap.NET.Internals;
 using GMap.NET.MapProviders;
@@ -112,6 +111,7 @@ namespace GMap.NET.WindowsForms
         /// </summary>
         [Category("GMap.NET")]
         [Description("maximum zoom level of map")]
+        [DefaultValue(10)]
         public int MaxZoom
         {
             get
@@ -129,6 +129,7 @@ namespace GMap.NET.WindowsForms
         /// </summary>
         [Category("GMap.NET")]
         [Description("minimum zoom level of map")]
+        [DefaultValue(10)]
         public int MinZoom
         {
             get
@@ -146,6 +147,7 @@ namespace GMap.NET.WindowsForms
         /// </summary>
         [Category("GMap.NET")]
         [Description("map zooming type for mouse wheel")]
+        [DefaultValue(MouseWheelZoomType.MousePositionAndCenter)]
         public MouseWheelZoomType MouseWheelZoomType
         {
             get
@@ -202,6 +204,7 @@ namespace GMap.NET.WindowsForms
         /// </summary>
         [Category("GMap.NET")]
         [Description("enable map zoom on mouse wheel")]
+        [DefaultValue(false)]
         public bool MouseWheelZoomEnabled
         {
             get
@@ -247,6 +250,7 @@ namespace GMap.NET.WindowsForms
         /// </summary>
         [Category("GMap.NET")]
         [Description("background color od the selected area")]
+        [DefaultValue(typeof(Color), "0xFF0000")]
         public Color SelectedAreaFillColor
         {
             get
@@ -276,6 +280,7 @@ namespace GMap.NET.WindowsForms
         ///     draw lines at the mouse pointer position
         /// </summary>
         [Browsable(false)]
+        [DefaultValue(HelperLineOptions.ShowAlways)]
         public HelperLineOptions HelperLineOption
         {
             get
@@ -332,6 +337,7 @@ namespace GMap.NET.WindowsForms
         /// </summary>
         [Category("GMap.NET")]
         [Description("background color of the empty tile")]
+        [DefaultValue(typeof(Color), "0xFF0000")]
         public Color EmptyTileColor
         {
             get
@@ -379,6 +385,7 @@ namespace GMap.NET.WindowsForms
         ///     retry count to get tile
         /// </summary>
         [Browsable(false)]
+        [DefaultValue(1)]
         public int RetryLoadTile
         {
             get
@@ -395,6 +402,7 @@ namespace GMap.NET.WindowsForms
         ///     how many levels of tiles are staying decompresed in memory
         /// </summary>
         [Browsable(false)]
+        [DefaultValue(5)]
         public int LevelsKeepInMemory
         {
             get
@@ -420,6 +428,7 @@ namespace GMap.NET.WindowsForms
         /// </summary>
         [Category("GMap.NET")]
         [Description("shows tile gridlines")]
+        [DefaultValue(true)]
         public bool ShowTileGridLines
         {
             get
@@ -439,6 +448,7 @@ namespace GMap.NET.WindowsForms
         private RectLatLng _selectedArea;
 
         [Browsable(false)]
+        [DefaultValue(null)]
         public RectLatLng SelectedArea
         {
             get
@@ -505,6 +515,7 @@ namespace GMap.NET.WindowsForms
         private bool _grayScale;
 
         [Category("GMap.NET")]
+        [DefaultValue(false)]
         public bool GrayScaleMode
         {
             get
@@ -521,6 +532,7 @@ namespace GMap.NET.WindowsForms
         private bool _negative;
 
         [Category("GMap.NET")]
+        [DefaultValue(false)]
         public bool NegativeMode
         {
             get
@@ -1753,6 +1765,7 @@ namespace GMap.NET.WindowsForms
         ///     bearing for rotation of the map
         /// </summary>
         [Category("GMap.NET")]
+        [DefaultValue(0.0)]
         public float Bearing
         {
             get
@@ -2045,7 +2058,7 @@ namespace GMap.NET.WindowsForms
 
                 if (!overlayObjet && Core.MouseDown != GPoint.Empty)
                     OnMapClick?.Invoke(FromLocalToLatLng(e.X, e.Y), e);
-            }                       
+            }
         }
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)
@@ -2240,139 +2253,139 @@ namespace GMap.NET.WindowsForms
                     }
                 }
                 else
-                if (Core.MouseDown.IsEmpty)
-                {
-                    for (int i = Overlays.Count - 1; i >= 0; i--)
+                    if (Core.MouseDown.IsEmpty)
                     {
-                        var o = Overlays[i];
-                        if (o != null && o.IsVisibile && o.IsHitTestVisible)
+                        for (int i = Overlays.Count - 1; i >= 0; i--)
                         {
-                            foreach (var m in o.Markers)
+                            var o = Overlays[i];
+                            if (o != null && o.IsVisibile && o.IsHitTestVisible)
                             {
-                                if (m.IsVisible && m.IsHitTestVisible)
+                                foreach (var m in o.Markers)
                                 {
-                                    #region -- check --
-
-                                    var rp = new GPoint(e.X, e.Y);
-                                    if (!MobileMode)
+                                    if (m.IsVisible && m.IsHitTestVisible)
                                     {
-                                        rp.OffsetNegative(Core.RenderOffset);
-                                    }
+                                        #region -- check --
 
-                                    if (m.LocalArea.Contains((int)rp.X, (int)rp.Y))
-                                    {
-                                        if (!m.IsMouseOver)
+                                        var rp = new GPoint(e.X, e.Y);
+                                        if (!MobileMode)
                                         {
-                                            SetCursorHandOnEnter();
-                                            m.IsMouseOver = true;
-                                            IsMouseOverMarker = true;
-
-                                            OnMarkerEnter?.Invoke(m);
-
-                                            Invalidate();
+                                            rp.OffsetNegative(Core.RenderOffset);
                                         }
-                                    }
-                                    else if (m.IsMouseOver)
-                                    {
-                                        m.IsMouseOver = false;
-                                        IsMouseOverMarker = false;
-                                        RestoreCursorOnLeave();
-                                        OnMarkerLeave?.Invoke(m);
 
-                                        Invalidate();
-                                    }
-
-                                    #endregion
-                                }
-                            }
-
-                            foreach (var m in o.Routes)
-                            {
-                                if (m.IsVisible && m.IsHitTestVisible)
-                                {
-                                    #region -- check --
-
-                                    var rp = new GPoint(e.X, e.Y);
-                                    if (!MobileMode)
-                                    {
-                                        rp.OffsetNegative(Core.RenderOffset);
-                                    }
-
-                                    if (m.IsInside((int)rp.X, (int)rp.Y))
-                                    {
-                                        if (!m.IsMouseOver)
+                                        if (m.LocalArea.Contains((int)rp.X, (int)rp.Y))
                                         {
-                                            SetCursorHandOnEnter();
-                                            m.IsMouseOver = true;
-                                            IsMouseOverRoute = true;
+                                            if (!m.IsMouseOver)
+                                            {
+                                                SetCursorHandOnEnter();
+                                                m.IsMouseOver = true;
+                                                IsMouseOverMarker = true;
 
-                                            OnRouteEnter?.Invoke(m);
+                                                OnMarkerEnter?.Invoke(m);
 
-                                            Invalidate();
+                                                Invalidate();
+                                            }
                                         }
-                                    }
-                                    else
-                                    {
-                                        if (m.IsMouseOver)
+                                        else if (m.IsMouseOver)
                                         {
                                             m.IsMouseOver = false;
-                                            IsMouseOverRoute = false;
+                                            IsMouseOverMarker = false;
                                             RestoreCursorOnLeave();
-                                            OnRouteLeave?.Invoke(m);
+                                            OnMarkerLeave?.Invoke(m);
 
                                             Invalidate();
                                         }
-                                    }
 
-                                    #endregion
+                                        #endregion
+                                    }
                                 }
-                            }
 
-                            foreach (var m in o.Polygons)
-                            {
-                                if (m.IsVisible && m.IsHitTestVisible)
+                                foreach (var m in o.Routes)
                                 {
-                                    #region -- check --
-
-                                    var rp = new GPoint(e.X, e.Y);
-
-                                    if (!MobileMode)
+                                    if (m.IsVisible && m.IsHitTestVisible)
                                     {
-                                        rp.OffsetNegative(Core.RenderOffset);
-                                    }
+                                        #region -- check --
 
-                                    if (m.IsInsideLocal((int)rp.X, (int)rp.Y))
-                                    {
-                                        if (!m.IsMouseOver)
+                                        var rp = new GPoint(e.X, e.Y);
+                                        if (!MobileMode)
                                         {
-                                            SetCursorHandOnEnter();
-                                            m.IsMouseOver = true;
-                                            IsMouseOverPolygon = true;
-
-                                            OnPolygonEnter?.Invoke(m);
-
-                                            Invalidate();
+                                            rp.OffsetNegative(Core.RenderOffset);
                                         }
-                                    }
-                                    else
-                                    {
-                                        if (m.IsMouseOver)
+
+                                        if (m.IsInside((int)rp.X, (int)rp.Y))
                                         {
-                                            m.IsMouseOver = false;
-                                            IsMouseOverPolygon = false;
-                                            RestoreCursorOnLeave();
-                                            OnPolygonLeave?.Invoke(m);
+                                            if (!m.IsMouseOver)
+                                            {
+                                                SetCursorHandOnEnter();
+                                                m.IsMouseOver = true;
+                                                IsMouseOverRoute = true;
 
-                                            Invalidate();
+                                                OnRouteEnter?.Invoke(m);
+
+                                                Invalidate();
+                                            }
                                         }
-                                    }
+                                        else
+                                        {
+                                            if (m.IsMouseOver)
+                                            {
+                                                m.IsMouseOver = false;
+                                                IsMouseOverRoute = false;
+                                                RestoreCursorOnLeave();
+                                                OnRouteLeave?.Invoke(m);
 
-                                    #endregion
+                                                Invalidate();
+                                            }
+                                        }
+
+                                        #endregion
+                                    }
+                                }
+
+                                foreach (var m in o.Polygons)
+                                {
+                                    if (m.IsVisible && m.IsHitTestVisible)
+                                    {
+                                        #region -- check --
+
+                                        var rp = new GPoint(e.X, e.Y);
+
+                                        if (!MobileMode)
+                                        {
+                                            rp.OffsetNegative(Core.RenderOffset);
+                                        }
+
+                                        if (m.IsInsideLocal((int)rp.X, (int)rp.Y))
+                                        {
+                                            if (!m.IsMouseOver)
+                                            {
+                                                SetCursorHandOnEnter();
+                                                m.IsMouseOver = true;
+                                                IsMouseOverPolygon = true;
+
+                                                OnPolygonEnter?.Invoke(m);
+
+                                                Invalidate();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (m.IsMouseOver)
+                                            {
+                                                m.IsMouseOver = false;
+                                                IsMouseOverPolygon = false;
+                                                RestoreCursorOnLeave();
+                                                OnPolygonLeave?.Invoke(m);
+
+                                                Invalidate();
+                                            }
+                                        }
+
+                                        #endregion
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
                 if (_renderHelperLine)
                 {
@@ -2727,6 +2740,7 @@ namespace GMap.NET.WindowsForms
 
         [Category("GMap.NET")]
         [Description("map scale type")]
+        [DefaultValue(ScaleModes.Integer)]
         public ScaleModes ScaleMode { get; set; } = ScaleModes.Integer;
 
         [Category("GMap.NET")]
@@ -3086,6 +3100,7 @@ namespace GMap.NET.WindowsForms
         ///     is routes enabled
         /// </summary>
         [Category("GMap.NET")]
+        [DefaultValue(true)]
         public bool RoutesEnabled
         {
             get
@@ -3102,6 +3117,7 @@ namespace GMap.NET.WindowsForms
         ///     is polygons enabled
         /// </summary>
         [Category("GMap.NET")]
+        [DefaultValue(true)]
         public bool PolygonsEnabled
         {
             get
@@ -3118,6 +3134,7 @@ namespace GMap.NET.WindowsForms
         ///     is markers enabled
         /// </summary>
         [Category("GMap.NET")]
+        [DefaultValue(true)]
         public bool MarkersEnabled
         {
             get
@@ -3134,6 +3151,7 @@ namespace GMap.NET.WindowsForms
         ///     can user drag map
         /// </summary>
         [Category("GMap.NET")]
+        [DefaultValue(true)]
         public bool CanDragMap
         {
             get
@@ -3150,6 +3168,7 @@ namespace GMap.NET.WindowsForms
         ///     map render mode
         /// </summary>
         [Browsable(false)]
+        [DefaultValue(RenderMode.GDI_PLUS)]
         public RenderMode RenderMode
         {
             get

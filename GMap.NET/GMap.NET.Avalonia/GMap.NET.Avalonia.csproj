@@ -6,7 +6,7 @@
         <RootNamespace>GMap.NET</RootNamespace>
         <Nullable>enable</Nullable>
         <LangVersion>default</LangVersion>
-        <TargetFrameworks>net461;net462;net47;net471;net472;net48;net481;net5.0-windows;net6.0-windows;net7.0-windows;net8.0-windows</TargetFrameworks>        
+        <TargetFrameworks>net8.0-windows;net10.0-windows</TargetFrameworks>        
         <PackageReleaseNotes>
 - .Net Framework 4.7, 4.8 support added
 - .Net Core 3.1, 5.0, 6.0 support added
@@ -28,9 +28,10 @@ https://github.com/judero01col/GMap.NET/blob/master/README.md#release-notes
     </PropertyGroup>
     
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.2.4" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.4" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.4" />
+    <PackageReference Include="Avalonia" Version="12.0.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.0.4" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.17" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
    </ItemGroup>
 
 

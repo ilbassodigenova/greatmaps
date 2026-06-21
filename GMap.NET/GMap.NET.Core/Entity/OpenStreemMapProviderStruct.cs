@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
+
 namespace GMap.NET.Entity
 {
     public class OpenStreetMapGeocodeEntity

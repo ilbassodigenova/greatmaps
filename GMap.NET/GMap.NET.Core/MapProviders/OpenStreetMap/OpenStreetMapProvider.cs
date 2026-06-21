@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
-using System.Xml;
 using GMap.NET.Entity;
 using GMap.NET.Internals;
 using GMap.NET.Projections;
@@ -152,7 +151,7 @@ namespace GMap.NET.MapProviders
 
                             ret.Duration = result.routes[0].duration.ToString();
 
-                            var points = new List<PointLatLng>();
+                            List<PointLatLng> points = new List<PointLatLng>();
                             PureProjection.PolylineDecode(points, result.routes[0].geometry);
                             ret.Points.AddRange(points);                           
                         }
@@ -172,9 +171,6 @@ namespace GMap.NET.MapProviders
 
         static readonly string TravelTypeFoot = "foot";
         static readonly string TravelTypeMotorCar = "motorcar";
-
-        static readonly string WalkingStr = "Walking";
-        static readonly string DrivingStr = "Driving";
 
         #endregion
 
@@ -441,12 +437,16 @@ namespace GMap.NET.MapProviders
 
         #endregion
 
-        string MakeTileImageUrl(GPoint pos, int zoom, string language)
+        private string MakeTileImageUrl(GPoint pos, int zoom, string language)
         {
             char letter = ServerLetters[GetServerNum(pos, 3)];
             return string.Format(UrlFormat, letter, zoom, pos.X, pos.Y);
         }
 
-        static readonly string UrlFormat = "https://{0}.tile.openstreetmap.org/{1}/{2}/{3}.png";
+        /// <summary>
+        /// this needs 4 arguments. 0: "a","b","c" server letter, 2 zoom, 3 Lat, 4 Lon. and should be in format
+        /// <para><c>"https://{0}.tile.openstreetmap.org/{1}/{2}/{3}.png"</c></para>
+        /// </summary>
+        public string UrlFormat = "https://{0}.tile.openstreetmap.org/{1}/{2}/{3}.png";
     }
 }

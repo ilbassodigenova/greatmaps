@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using GMap.NET;
@@ -32,10 +31,11 @@ namespace Demo.AvaloniaUi
             AvaloniaXamlLoader.Load(this);
         }
 
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void OnClosing(WindowClosingEventArgs e)
         {
             base.OnClosing(e);
             this.Get<GMapControl>("GMap").Dispose();
         }
+
     }
 }

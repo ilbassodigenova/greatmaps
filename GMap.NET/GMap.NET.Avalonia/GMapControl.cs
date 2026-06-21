@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
@@ -51,16 +50,14 @@ namespace GMap.NET.Avalonia
 
         public static readonly StyledProperty<PointLatLng> CenterPositionProperty =
             AvaloniaProperty.Register<GMapControl, PointLatLng>(
-                nameof(CenterPosition),
-                notifying: CenterPositionPropertyChanged);
+                nameof(CenterPosition));
 
         // Using a DependencyProperty as the backing store for point.  This enables animation, styling, binding, etc...
         public static readonly StyledProperty<Point> MapPointProperty =
             AvaloniaProperty.Register<GMapControl, Point>(
-                nameof(MapPoint),
-                notifying: OnMapPointPropertyChanged);
+                nameof(MapPoint));
 
-        private static void OnMapPointPropertyChanged(IAvaloniaObject source, bool e)
+        private static void OnMapPointPropertyChanged(AvaloniaObject source, bool e)
         {
             if (e) return;
             if (source is not GMapControl gmap) return;
@@ -69,32 +66,25 @@ namespace GMap.NET.Avalonia
 
         public static readonly StyledProperty<GMapProvider> MapProviderProperty =
             AvaloniaProperty.Register<GMapControl, GMapProvider>(
-                nameof(MapProvider),
-                notifying: MapProviderPropertyChanged);
+                nameof(MapProvider));
 
         public static readonly StyledProperty<double> ZoomProperty =
             AvaloniaProperty.Register<GMapControl, double>(
-                nameof(Zoom),
-                //notifying: ZoomPropertyChanged,
-                coerce: OnCoerceZoom);
+                nameof(Zoom));
 
         /// <summary>
         ///     The zoom x property
         /// </summary>
         public static readonly StyledProperty<double> ZoomXProperty =
             AvaloniaProperty.Register<GMapControl, double>(
-                nameof(ZoomX),
-                //notifying: ZoomXPropertyChanged,
-                coerce: OnCoerceZoom);
+                nameof(ZoomX));
 
         /// <summary>
         ///     The zoom y property
         /// </summary>
         public static readonly StyledProperty<double> ZoomYProperty =
             AvaloniaProperty.Register<GMapControl, double>(
-                nameof(ZoomY),
-                //notifying: ZoomYPropertyChanged,
-                coerce: OnCoerceZoom);
+                nameof(ZoomY));
 
         /// <summary>
         ///     The multi touch enabled property
@@ -182,7 +172,7 @@ namespace GMap.NET.Avalonia
             set { SetValue(MultiTouchEnabledProperty, value); }
         }
 
-        private static double OnCoerceZoom(IAvaloniaObject o, double value)
+        private static double OnCoerceZoom(AvaloniaObject o, double value)
         {
             if (o is GMapControl map)
             {
@@ -207,7 +197,7 @@ namespace GMap.NET.Avalonia
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs" /> instance containing the event data.</param>
-        private static void CenterPositionPropertyChanged(IAvaloniaObject obj, bool e)
+        private static void CenterPositionPropertyChanged(AvaloniaObject obj, bool e)
         {
             if (e) return;
 
@@ -217,7 +207,7 @@ namespace GMap.NET.Avalonia
             gmapControl.Position = gmapControl.CenterPosition;
         }
 
-        private static void MapProviderPropertyChanged(IAvaloniaObject d, bool e)
+        private static void MapProviderPropertyChanged(AvaloniaObject d, bool e)
         {
             if (e) return;
             var map = (GMapControl)d;
@@ -245,12 +235,10 @@ namespace GMap.NET.Avalonia
                 if (!string.IsNullOrEmpty(map._core.Provider.Copyright))
                 {
                     map._copyright = new FormattedText(map._core.Provider.Copyright,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        FlowDirection.LeftToRight,
                         new Typeface("GenericSansSerif"),
-                        9,
-                        TextAlignment.Left,
-                        TextWrapping.Wrap,
-                        new Size()
-                        );
+                        9, null);
                 }
 
                 if (map._core.IsStarted && map._core.ZoomToArea)
@@ -343,7 +331,7 @@ namespace GMap.NET.Avalonia
             }
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
+        protected void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
         {
             base.OnPropertyChanged(change);
             switch (change.Property.Name)
@@ -409,7 +397,7 @@ namespace GMap.NET.Avalonia
 
         #endregion DependencyProperties and related stuff
 
-        private readonly MouseDevice _mouse = new MouseDevice();
+        private readonly MouseDevice _mouse;
 
         private readonly Core _core = new Core();
 
@@ -710,10 +698,6 @@ namespace GMap.NET.Avalonia
                 //Dispatcher.ShutdownStarted += Dispatcher_ShutdownStarted;
                 //SizeChanged += GMapControl_SizeChanged;
 
-                // by default its internal property, feel free to use your own
-                if (Items == null)
-                    Items = Markers;
-
                 //TODO: find default value here
                 //_core.Zoom = (int)(double)ZoomProperty.DefaultMetadata.DefaultValue;
                 _core.Zoom = 10;
@@ -768,9 +752,9 @@ namespace GMap.NET.Avalonia
             }
         }
 
-        protected override void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        protected void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            base.ItemsCollectionChanged(sender, e);
+            //base.CollectionChanged(sender, e);
 
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
@@ -1096,17 +1080,14 @@ namespace GMap.NET.Avalonia
                                     //TODO: Avalonia
                                     //tileText.MaxTextWidth = _core.TileRect.Width - 11;
 
-                                    g.DrawText(
-                                        Brushes.Black,
-                                        new Point(_core.TileRect.X + 11, _core.TileRect.Y + 11),
-                                        tileText);
+                                    g.DrawText(tileText,
+                                        new Point(_core.TileRect.X + 11, _core.TileRect.Y + 11));
 
-                                    g.DrawText(
-                                        Brushes.Black,
+
+                                    g.DrawText(EmptyTileText,
                                         new Point(
-                                            _core.TileRect.X + _core.TileRect.Width / 2 - EmptyTileText.Bounds.Width / 2,
-                                            _core.TileRect.Y + _core.TileRect.Height / 2 - EmptyTileText.Bounds.Height / 2),
-                                        EmptyTileText);
+                                            _core.TileRect.X + _core.TileRect.Width / 2 - EmptyTileText.Width / 2,
+                                            _core.TileRect.Y + _core.TileRect.Height / 2 - EmptyTileText.Height / 2));
                                 }
                             }
                         }
@@ -1124,23 +1105,21 @@ namespace GMap.NET.Avalonia
                             {
                                 var tileText = GetFormattedText("CENTER:" + tilePoint.ToString(), 16);
                                 //tileText.MaxTextWidth = _core.TileRect.Width;
-                                g.DrawText(
-                                    Brushes.Black,
+                                g.DrawText(tileText,
                                     new Point(
-                                        _core.TileRect.X + _core.TileRect.Width / 2 - EmptyTileText.Bounds.Width / 2,
-                                        _core.TileRect.Y + _core.TileRect.Height / 2 - tileText.Bounds.Height / 2),
-                                    tileText);
+                                        _core.TileRect.X + _core.TileRect.Width / 2 - EmptyTileText.Width / 2,
+                                        _core.TileRect.Y + _core.TileRect.Height / 2 - tileText.Height / 2)
+                                    );
                             }
                             else
                             {
                                 var tileText = GetFormattedText("TILE: " + tilePoint.ToString(), 16);
                                 //tileText.MaxTextWidth = _core.TileRect.Width;
-                                g.DrawText(
-                                    Brushes.Black,
+                                g.DrawText(tileText,
                                     new Point(
-                                        _core.TileRect.X + _core.TileRect.Width / 2 - EmptyTileText.Bounds.Width / 2,
-                                        _core.TileRect.Y + _core.TileRect.Height / 2 - tileText.Bounds.Height / 2),
-                                    tileText);
+                                        _core.TileRect.X + _core.TileRect.Width / 2 - EmptyTileText.Width / 2,
+                                        _core.TileRect.Y + _core.TileRect.Height / 2 - tileText.Height / 2)
+                                    );
                             }
                         }
                     }
@@ -1450,12 +1429,9 @@ namespace GMap.NET.Avalonia
         private static FormattedText GetFormattedText(string text, int size)
         {
             return new FormattedText(
-                text,
+                text, System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface("GenericSansSerif"),
-                size,
-                TextAlignment.Left,
-                TextWrapping.Wrap,
-                new Size());
+                size, null);
         }
 
         #region UserControl Events
@@ -1469,17 +1445,17 @@ namespace GMap.NET.Avalonia
 
             if (IsRotated)
             {
-                using (drawingContext.PushPreTransform(_rotationMatrix.Value))
+                using (drawingContext.PushTransform(_rotationMatrix.Value))
                 {
                     if (MapScaleTransform != null)
                     {
-                        using (drawingContext.PushPreTransform(MapScaleTransform.Value))
-                        using (drawingContext.PushPreTransform(MapTranslateTransform.Value))
+                        using (drawingContext.PushTransform(MapScaleTransform.Value))
+                        using (drawingContext.PushTransform(MapTranslateTransform.Value))
                             DrawMap(drawingContext);
                     }
                     else
                     {
-                        using var _ = drawingContext.PushPreTransform(MapTranslateTransform.Value);
+                        using var _ = drawingContext.PushTransform(MapTranslateTransform.Value);
                         DrawMap(drawingContext);
                     }
                 }
@@ -1488,8 +1464,8 @@ namespace GMap.NET.Avalonia
             {
                 if (MapScaleTransform != null)
                 {
-                    using (drawingContext.PushPreTransform(MapScaleTransform.Value))
-                    using (drawingContext.PushPreTransform(MapTranslateTransform.Value))
+                    using (drawingContext.PushTransform(MapScaleTransform.Value))
+                    using (drawingContext.PushTransform(MapTranslateTransform.Value))
                     {
                         DrawMap(drawingContext);
 
@@ -1501,7 +1477,7 @@ namespace GMap.NET.Avalonia
                 }
                 else
                 {
-                    using var _ = drawingContext.PushPreTransform(MapTranslateTransform.Value);
+                    using var _ = drawingContext.PushTransform(MapTranslateTransform.Value);
                     DrawMap(drawingContext);
 #if DEBUG
                     drawingContext.DrawLine(_virtualCenterCrossPen, new Point(-20, 0), new Point(20, 0));
@@ -1553,19 +1529,12 @@ namespace GMap.NET.Avalonia
                     new Point(Bounds.Width / 2, Bounds.Height / 2 + 5));
             }
 
-            if (_renderHelperLine)
-            {
-                var p = _mouse.GetPosition(this);
-
-                drawingContext.DrawLine(HelperLinePen, new Point(p.X, 0), new Point(p.X, Bounds.Height));
-                drawingContext.DrawLine(HelperLinePen, new Point(0, p.Y), new Point(Bounds.Width, p.Y));
-            }
 
             #region -- copyright --
 
             if (_copyright != null)
             {
-                drawingContext.DrawText(Brushes.Black, new Point(5, Bounds.Height - _copyright.Bounds.Height - 5), _copyright);
+                drawingContext.DrawText(_copyright, new Point(5, Bounds.Height - _copyright.Height - 5));
             }
 
             #endregion -- copyright --
@@ -1781,7 +1750,6 @@ namespace GMap.NET.Avalonia
                     IsDragging = false;
                     Debug.WriteLine("IsDragging = " + IsDragging);
                     Cursor = _cursorBefore;
-                    _mouse.Capture(null);
                 }
 
                 _core.EndDrag();
@@ -1864,7 +1832,6 @@ namespace GMap.NET.Avalonia
                     Debug.WriteLine("IsDragging = " + IsDragging);
                     _cursorBefore = Cursor;
                     Cursor = new Cursor(StandardCursorType.SizeAll);
-                    _mouse.Capture(this);
                 }
 
                 if (BoundsOfMap.HasValue && !BoundsOfMap.Value.Contains(Position))

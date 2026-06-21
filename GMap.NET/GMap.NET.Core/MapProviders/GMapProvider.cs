@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using GMap.NET.Internals;
 using GMap.NET.Projections;
 
@@ -19,11 +23,11 @@ namespace GMap.NET.MapProviders
         {
             List = new List<GMapProvider>();
 
-            var type = typeof(GMapProviders);
+            Type type = typeof(GMapProviders);
 
-            foreach (var p in type.GetFields())
+            foreach (FieldInfo p in type.GetFields())
             {
-                var v = p.GetValue(null) as GMapProvider; // static classes cannot be instanced, so use null...
+                GMapProvider v = p.GetValue(null) as GMapProvider; // static classes cannot be instanced, so use null...
                 if (v != null)
                 {
                     List.Add(v);
@@ -32,14 +36,14 @@ namespace GMap.NET.MapProviders
 
             Hash = new Dictionary<Guid, GMapProvider>();
 
-            foreach (var p in List)
+            foreach (GMapProvider p in List)
             {
                 Hash.Add(p.Id, p);
             }
 
             DbHash = new Dictionary<int, GMapProvider>();
 
-            foreach (var p in List)
+            foreach (GMapProvider p in List)
             {
                 DbHash.Add(p.DbId, p);
             }
@@ -416,6 +420,15 @@ namespace GMap.NET.MapProviders
             return response.ContentType.Contains(responseContentType);
         }
 
+        protected virtual bool CheckTileImageHttpResponse(HttpResponseMessage response)
+        {
+            if (response.Content.Headers.ContentType != null && response.Content.Headers.ContentType.MediaType != null)
+            {
+                return response.Content.Headers.ContentType.MediaType.Contains(responseContentType);
+            }
+            return false;
+        }
+
         string _authorization = string.Empty;
 
         /// <summary>
@@ -430,180 +443,102 @@ namespace GMap.NET.MapProviders
 
         protected virtual void InitializeWebRequest(WebRequest request) { }
 
+        private static string mylock = "Loacker";
+
         protected PureImage GetTileImageUsingHttp(string url)
         {
             PureImage ret = null;
-
-            var request = IsSocksProxy ? SocksHttpWebRequest.Create(url) : 
-                WebRequestFactory != null ? WebRequestFactory(this, url) : WebRequest.Create(url);
-
-            if (WebProxy != null)
+            lock (mylock)
             {
-                request.Proxy = WebProxy;
-            }
 
-            if (Credential != null)
-            {
-                request.PreAuthenticate = true;
-                request.Credentials = Credential;
-            }
+                HttpClientHandler handler = new HttpClientHandler();
 
-            if (!string.IsNullOrEmpty(_authorization))
-            {
-                request.Headers.Set("Authorization", _authorization);
-            }
+                if (Credential != null)
+                {
+                    handler.PreAuthenticate = true;
+                    handler.Credentials = Credential;
+                }
 
-            if (request is HttpWebRequest r)
-            {
-                r.UserAgent = UserAgent;
-                r.ReadWriteTimeout = TimeoutMs * 6;
-                r.Accept = requestAccept;
+                if (WebProxy != null)
+                {
+                    handler.Proxy = WebProxy;
+                }
+
+
+
+                HttpClient client = new HttpClient(handler);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; GMapsdotnet/1.0)");
                 if (!string.IsNullOrEmpty(RefererUrl))
                 {
-                    r.Referer = RefererUrl;
+                    client.DefaultRequestHeaders.Referrer = new Uri(RefererUrl);
                 }
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(requestAccept));
+                StringContent content = new StringContent(string.Empty);
 
-                r.Timeout = TimeoutMs;
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(UserAgent))
+                using (Task<HttpResponseMessage> response = client.GetAsync(url))
                 {
-                    request.Headers.Add("User-Agent", UserAgent);
-                }
-
-                if (!string.IsNullOrEmpty(requestAccept))
-                {
-                    request.Headers.Add("Accept", requestAccept);
-                }
-
-                if (!string.IsNullOrEmpty(RefererUrl))
-                {
-                    request.Headers.Add("Referer", RefererUrl);
-                }
-            }
-
-            InitializeWebRequest(request);
-
-            using (var response = request.GetResponse())
-            {
-                if (CheckTileImageHttpResponse(response))
-                {
-                    using (var responseStream = response.GetResponseStream())
+                    response.Wait();
+                    if (CheckTileImageHttpResponse(response.Result))
                     {
-                        var data = Stuff.CopyStream(responseStream, false);
-
-                        Debug.WriteLine("Response[" + data.Length + " bytes]: " + url);
-
-                        if (data.Length > 0)
+                        using (Task<Stream> responseStream = response.Result.Content.ReadAsStreamAsync())
                         {
-                            ret = TileImageProxy.FromStream(data);
+                            responseStream.Wait();
+                            MemoryStream data = Stuff.CopyStream(responseStream.Result, false);
 
-                            if (ret != null)
+                            Debug.WriteLine("Response[" + data.Length + " bytes]: " + url);
+
+                            if (data.Length > 0)
                             {
-                                ret.Data = data;
-                                ret.Data.Position = 0;
-                            }
-                            else
-                            {
-                                data.Dispose();
+                                ret = TileImageProxy.FromStream(data);
+
+                                if (ret != null)
+                                {
+                                    ret.Data = data;
+                                    ret.Data.Position = 0;
+                                }
+                                else
+                                {
+                                    data.Dispose();
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    Debug.WriteLine("CheckTileImageHttpResponse[false]: " + url);
-                }
+                    else
+                    {
+                        Debug.WriteLine("CheckTileImageHttpResponse[false]: " + url);
+                    }
 
-                response.Close();
+                }
             }
-
             return ret;
         }
 
         protected string GetContentUsingHttp(string url)
         {
             string ret = string.Empty;
-
-            var request = IsSocksProxy ? SocksHttpWebRequest.Create(url) : 
-                WebRequestFactory != null ? WebRequestFactory(this, url) : WebRequest.Create(url);
-
-            if (WebProxy != null)
-            {
-                request.Proxy = WebProxy;
-            }
+            HttpClientHandler handler = new HttpClientHandler();
 
             if (Credential != null)
             {
-                request.PreAuthenticate = true;
-                request.Credentials = Credential;
+                handler.PreAuthenticate = true;
+                handler.Credentials = Credential;
             }
 
-
-            if (!string.IsNullOrEmpty(_authorization))
+            if (WebProxy != null)
             {
-                request.Headers.Set("Authorization", _authorization);
+                handler.Proxy = WebProxy;
             }
 
-            if (request is HttpWebRequest r)
-            {
-                r.UserAgent = UserAgent;
-                r.ReadWriteTimeout = TimeoutMs * 6;
-                r.Accept = requestAccept;
-                r.Referer = RefererUrl;
-                r.Timeout = TimeoutMs;
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(UserAgent))
-                {
-                    request.Headers.Add("User-Agent", UserAgent);
-                }
+            HttpClient client = new HttpClient(handler);
+            StringContent content = new StringContent(string.Empty);
+            Task<HttpResponseMessage> myresponse = client.PostAsync(url, content);
+            myresponse.Wait();
 
-                if (!string.IsNullOrEmpty(requestAccept))
-                {
-                    request.Headers.Add("Accept", requestAccept);
-                }
-
-                if (!string.IsNullOrEmpty(RefererUrl))
-                {
-                    request.Headers.Add("Referer", RefererUrl);
-                }
-            }
-
-            InitializeWebRequest(request);
-
-            WebResponse response;
-
-            try
-            {
-                response = request.GetResponse();
-            }
-            catch (WebException ex)
-            {
-                response = (HttpWebResponse)ex.Response;
-            }
-            catch (Exception)
-            {
-                response = null;
-            }
-
-            if (response != null)
-            {
-                using (var responseStream = response.GetResponseStream())
-                {
-                    using (var read = new StreamReader(responseStream, Encoding.UTF8))
-                    {
-                        ret = read.ReadToEnd();
-                    }
-                }
-
-                response.Close();
-            }
-
-            return ret;
+            Task<string> responseString = myresponse.Result.Content.ReadAsStringAsync();
+            responseString.Wait();
+            return responseString.Result;
         }
+
 
         /// <summary>
         ///     use at your own risk, storing tiles in files is slow and hard on the file system

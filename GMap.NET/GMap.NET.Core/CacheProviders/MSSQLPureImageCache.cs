@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Diagnostics;
 using GMap.NET.MapProviders;
+using SqliteConnection = System.Data.SQLite.SQLiteConnection;
 
 namespace GMap.NET.CacheProviders
 {
@@ -34,10 +35,10 @@ namespace GMap.NET.CacheProviders
             }
         }
 
-        SqlCommand _cmdInsert;
-        SqlCommand _cmdFetch;
-        SqlConnection _cnGet;
-        SqlConnection _cnSet;
+        SQLiteCommand _cmdInsert;
+        SQLiteCommand _cmdFetch;
+        SqliteConnection _cnGet;
+        SqliteConnection _cnSet;
 
         bool _initialized;
 
@@ -77,13 +78,13 @@ namespace GMap.NET.CacheProviders
                     try
                     {
                         // different connections so the multi-thread inserts and selects don't collide on open readers.
-                        _cnGet = new SqlConnection(_connectionString);
+                        _cnGet = new SqliteConnection(_connectionString);
                         _cnGet.Open();
-                        _cnSet = new SqlConnection(_connectionString);
+                        _cnSet = new SqliteConnection(_connectionString);
                         _cnSet.Open();
 
                         bool tableExists;
-                        using (var cmd = new SqlCommand("select object_id('GMapNETcache')", _cnGet))
+                        using (var cmd = new SQLiteCommand("select object_id('GMapNETcache')", _cnGet))
                         {
                             object objid = cmd.ExecuteScalar();
                             tableExists = objid != null && objid != DBNull.Value;
@@ -91,7 +92,7 @@ namespace GMap.NET.CacheProviders
 
                         if (!tableExists)
                         {
-                            using (var cmd = new SqlCommand(
+                            using (var cmd = new SQLiteCommand(
                                 "CREATE TABLE [GMapNETcache] ( \n"
                                 + "   [Type] [int]   NOT NULL, \n"
                                 + "   [Zoom] [int]   NOT NULL, \n"
@@ -107,24 +108,24 @@ namespace GMap.NET.CacheProviders
                         }
 
                         _cmdFetch =
-                            new SqlCommand(
+                            new SQLiteCommand(
                                 "SELECT [Tile] FROM [GMapNETcache] WITH (NOLOCK) WHERE [X]=@x AND [Y]=@y AND [Zoom]=@zoom AND [Type]=@type",
                                 _cnGet);
-                        _cmdFetch.Parameters.Add("@x", System.Data.SqlDbType.Int);
-                        _cmdFetch.Parameters.Add("@y", System.Data.SqlDbType.Int);
-                        _cmdFetch.Parameters.Add("@zoom", System.Data.SqlDbType.Int);
-                        _cmdFetch.Parameters.Add("@type", System.Data.SqlDbType.Int);
+                        _cmdFetch.Parameters.Add("@x", System.Data.DbType.Int32);
+                        _cmdFetch.Parameters.Add("@y", System.Data.DbType.Int32);
+                        _cmdFetch.Parameters.Add("@zoom", System.Data.DbType.Int32);
+                        _cmdFetch.Parameters.Add("@type", System.Data.DbType.Int32);
                         _cmdFetch.Prepare();
 
                         _cmdInsert =
-                            new SqlCommand(
+                            new SQLiteCommand(
                                 "INSERT INTO [GMapNETcache] ( [X], [Y], [Zoom], [Type], [Tile] ) VALUES ( @x, @y, @zoom, @type, @tile )",
                                 _cnSet);
-                        _cmdInsert.Parameters.Add("@x", System.Data.SqlDbType.Int);
-                        _cmdInsert.Parameters.Add("@y", System.Data.SqlDbType.Int);
-                        _cmdInsert.Parameters.Add("@zoom", System.Data.SqlDbType.Int);
-                        _cmdInsert.Parameters.Add("@type", System.Data.SqlDbType.Int);
-                        _cmdInsert.Parameters.Add("@tile", System.Data.SqlDbType.Image); //, calcmaximgsize);
+                        _cmdInsert.Parameters.Add("@x", System.Data.DbType.Int32);
+                        _cmdInsert.Parameters.Add("@y", System.Data.DbType.Int32);
+                        _cmdInsert.Parameters.Add("@zoom", System.Data.DbType.Int32);
+                        _cmdInsert.Parameters.Add("@type", System.Data.DbType.Int32);
+                        _cmdInsert.Parameters.Add("@tile", System.Data.DbType.Binary); //, calcmaximgsize);
                         //can't prepare insert because of the IMAGE field having a variable size.  Could set it to some 'maximum' size?
 
                         Initialized = true;

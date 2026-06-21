@@ -32,7 +32,7 @@ namespace GMap.NET.Avalonia
             {
                 ctx.BeginFigure(localPath[0], true);
                 // Draw a line to the next specified point.
-                foreach(var path in localPath)
+                foreach (var path in localPath)
                 {
                     ctx.LineTo(path);
                 }
@@ -42,7 +42,6 @@ namespace GMap.NET.Avalonia
             // Freeze the geometry (make it unmodifiable)
             // for additional performance benefits.
             //geometry.Freeze();
-            geometry.EndBatchUpdate();
             // Create a path to draw a geometry with.
             var myPath = new Path();
             {
