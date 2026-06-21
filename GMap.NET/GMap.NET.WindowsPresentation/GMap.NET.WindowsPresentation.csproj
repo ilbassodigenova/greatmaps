@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <PackageId>GMap.NET.WinPresentation</PackageId>    
+    <PackageId>Ibdg.GMap.NET.WinPresentation</PackageId>    
     <Product>GMap.NET.WindowsPresentation</Product>
     <AssemblyTitle>GMap.NET.WindowsPresentation</AssemblyTitle>
 
@@ -9,11 +9,10 @@
     <UseWPF>true</UseWPF>
     
     <PackageReleaseNotes>
-      - .Net Framework 4.8 support added
-      - .Net Core 8.0 10.0 support added
-
+      - Updated deprecated packages and deprecated calls.
+      - Fixed supported framewokrs: .NetStandard 2.0; .Net Framework 4.8 ; .Net Core 8.0 and 10.0
       History Release Notes
-      https://github.com/judero01col/GMap.NET/blob/master/README.md#release-notes
+      https://github.com/ilbassodigenova/greatmaps
     </PackageReleaseNotes>
   </PropertyGroup>
 

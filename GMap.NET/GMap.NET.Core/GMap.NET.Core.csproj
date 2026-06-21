@@ -1,20 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>GMap.NET.Core</PackageId>
+    <PackageId>Ibdg.GMap.NET.Core</PackageId>
     <Product>GMap.NET.Core</Product>
     <AssemblyTitle>GMap.NET.Core</AssemblyTitle>
     <RootNamespace>GMap.NET</RootNamespace>
     <TargetFrameworks>netstandard2.0; net48; net8.0;net10.0</TargetFrameworks>
     
     <PackageReleaseNotes>
-      - New Provider OpenStreetMapGraphHopper
-      - Fix OpenStreetMap GetRoute
-      - .Net Framework 4.8 support 
-      - .Net Core 8.0, 10 support added
+      - Fix OpenStreetMap Tiles fetching.
+      - Updated deprecated packages and deprecated calls.
+      - Fixed supported framewokrs: .NetStandard 2.0; .Net Framework 4.8 ; .Net Core 8.0 and 10.0
 
       History Release Notes
-      https://github.com/judero01col/GMap.NET/blob/master/README.md#release-notes
+      https://github.com/ilbassodigenova/greatmaps
     </PackageReleaseNotes>    
   </PropertyGroup>
     

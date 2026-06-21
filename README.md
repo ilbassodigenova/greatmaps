@@ -1,6 +1,12 @@
 # GMap.NET - Maps For Windows
 
-![GMap.Net](https://raw.githubusercontent.com/judero01col/GMap.NET/master/GMap.ico "this is the result")
+## About this relesase
+
+Fork from https://github.com/jelinj8/greatmaps for fixing things that hadn't been fixed since a while.
+
+References and thanks also goes on the author that mantained and published on nuget: https://github.com/judero01col/GMap.NET/
+
+## Intro
 
 GMap.NET Windows Forms, Presentation & Avalonia is an excellent open source, powerful, free and cross-platform .NET control.
 Allows the use of routing, geocoding, directions and maps from Google, Yahoo!, Bing, OpenStreetMap, ArcGIS, Pergo, SigPac, Yendux, Mapy.cz, Maps.lt, iKarte.lv, NearMap, HereMap, CloudMade, WikiMapia, MapQuest and many more.
@@ -8,29 +14,24 @@ Allows the use of routing, geocoding, directions and maps from Google, Yahoo!, B
 # Installing
 GMap.NET is available as a Nuget package from:
 
-https://www.nuget.org/packages/GMap.NET.Core
+https://www.nuget.org/packages/Ibdg.GMap.NET.Core
 
-https://www.nuget.org/packages/GMap.NET.WinForms
+https://www.nuget.org/packages/Ibdg.GMap.NET.WinForms
 
-https://www.nuget.org/packages/GMap.NET.WinForms.Utils
-
-https://www.nuget.org/packages/GMap.NET.WinPresentation 
+https://www.nuget.org/packages/Ibdg.GMap.NET.WinPresentation 
 
 https://www.nuget.org/packages/GMap.NET.WinAvalonia 
 
 Are installable using the following command in the Package Manager Console:
 
 ```
-PM> Install-Package GMap.NET.Core
+PM> Install-Package Ibdg.GMap.NET.Core
 ```
 ```
-PM> Install-Package GMap.NET.WinForms
+PM> Install-Package Ibdg.GMap.NET.WinForms
 ```
 ```
-PM> Install-Package GMap.NET.WinForms.Utils
-```
-```
-PM> Install-Package GMap.NET.WinPresentation
+PM> Install-Package Ibdg.GMap.NET.WinPresentation
 ```
 ```
 PM> Install-Package GMap.NET.WinAvalonia
@@ -42,6 +43,29 @@ If you wish to use the cutting-edge version of gmaps-api-net, then you can clone
 https://github.com/judero01col/GMap.NET/wiki
 
 # Release Notes
+
+## Version 2.1.7
+
+#### GMap.NET.Core
+- Fix OpenStreetMap Tiles fetching.
+- Updated deprecated packages and deprecated calls.
+- Fixed supported framewokrs: .NetStandard 2.0; .Net Framework 4.8 ; .Net Core 8.0 and 10.0
+
+#### GMap.NET.WindowsForms
+- Updated deprecated packages and deprecated calls.
+- Fixed supported framewokrs: .NetStandard 2.0; .Net Framework 4.8 ; .Net Core 8.0 and 10.0
+
+#### GMap.NET.WindowsPresentation
+- Updated deprecated packages and deprecated calls.
+- Fixed supported framewokrs: .NetStandard 2.0; .Net Framework 4.8 ; .Net Core 8.0 and 10.0
+
+#### GMap.NET.Avalonia
+- Compiles with newer Avalonia API. Untested.
+
+#### GMap.NET.Windows Forms Utils 
+- Removed since unused.
+
+
 
 ## Version 2.1.6
 

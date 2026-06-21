@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <PackageId>GMap.NET.WinForms</PackageId>
+    <PackageId>Ibdg.GMap.NET.WinForms</PackageId>
     <Product>GMap.NET.WindowsForms</Product>
     <AssemblyTitle>GMap.NET.WindowsForms</AssemblyTitle>
     
@@ -10,11 +10,10 @@
     <DefineConstants>ContinuesMapNo;$(DefineConstants)</DefineConstants>
     
     <PackageReleaseNotes>
-- .Net Framework 4.8 support added
-- .Net Core 8.0 10.0 support added
-
-History Release Notes
-https://github.com/judero01col/GMap.NET/blob/master/README.md#release-notes
+      - Updated deprecated packages and deprecated calls.
+      - Fixed supported framewokrs: .NetStandard 2.0; .Net Framework 4.8 ; .Net Core 8.0 and 10.0
+      History Release Notes
+      https://github.com/ilbassodigenova/greatmaps
     </PackageReleaseNotes>
   </PropertyGroup>
 
