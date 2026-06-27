@@ -1,5 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using GMap.NET;
 using GMap.NET.Avalonia;
@@ -21,7 +20,7 @@ namespace Demo.AvaloniaUi
             GoogleMapProvider.Instance.ApiKey = "AIzaSyAmO6pIPTz0Lt8lmYZEIAaixitKjq-4WlB";
 
             MainMap = this.Get<GMapControl>("GMap");
-            MainMap.MapProvider = GMapProviders.GoogleMap;
+            MainMap.MapProvider = GMapProviders.OpenStreetMap;
             MainMap.Position = new PointLatLng(44.4268, 26.1025);
             MainMap.FillEmptyTiles = true;
         }

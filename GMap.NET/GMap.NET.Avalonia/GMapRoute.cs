@@ -57,6 +57,8 @@ namespace GMap.NET.Avalonia
             // Freeze the geometry (make it unmodifiable)
             // for additional performance benefits.
             //geometry.Freeze();
+            //michele
+            //geometry.EndBatchUpdate();
             // Create a path to draw a geometry with.
             var myPath = new Path();
             {
