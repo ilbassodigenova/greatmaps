@@ -23,6 +23,9 @@ namespace Demo.AvaloniaUi
             MainMap.MapProvider = GMapProviders.OpenStreetMap;
             MainMap.Position = new PointLatLng(44.4268, 26.1025);
             MainMap.FillEmptyTiles = true;
+            MainMap.Markers.Add(new(MainMap.Position));
+            MainMap.Markers.Add(new(new PointLatLng(44.4278, 26.1055)));
+            MainMap.Markers.Add(new(new PointLatLng(44.4298, 26.1075)));
         }
 
         private void InitializeComponent()

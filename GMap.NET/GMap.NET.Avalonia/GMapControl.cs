@@ -924,11 +924,18 @@ namespace GMap.NET.Avalonia
 
                 if (i != null)
                 {
-                    if (i is GMapMarker marker)
-                        marker.ForceUpdateLocalPosition(this);
+                    if (i is ObservableCollection<GMapMarker> l)
+                    {
+                        foreach (GMapMarker m in l)
+                        {
+                            m.ForceUpdateLocalPosition(this);
 
+                        }
+                    }
                     if (i is IShapable s)
+                    {
                         RegenerateShape(s);
+                    }
                 }
             }
             //}
