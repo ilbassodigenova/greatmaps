@@ -1,7 +1,4 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using System;
+﻿using Avalonia;
 
 namespace Demo.AvaloniaUi
 {

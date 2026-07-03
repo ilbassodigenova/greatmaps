@@ -881,7 +881,7 @@ namespace GMap.NET.Avalonia
         {
             var marker = s as GMapMarker;
             if (marker == null)
-                throw new NotSupportedException("shape not supported");
+                throw new NotSupportedException($"{s.GetType()} shape not supported");
 
             if (s.Points != null && s.Points.Count > 1)
             {
@@ -919,28 +919,37 @@ namespace GMap.NET.Avalonia
             //{
             UpdateMarkersOffset();
 
-            foreach (object? i in items)
+            foreach (object i in items)
             {
 
-                if (i != null)
+                if (i is ObservableCollection<GMapMarker> l)
                 {
-                    if (i is ObservableCollection<GMapMarker> l)
+                    foreach (GMapMarker m in l)
                     {
-                        foreach (GMapMarker m in l)
+                        m.ForceUpdateLocalPosition(this);
+                        if (m is IShapable s)
                         {
-                            m.ForceUpdateLocalPosition(this);
-
+                            RegenerateShape(s);
                         }
-                    }
-                    if (i is IShapable s)
-                    {
-                        RegenerateShape(s);
                     }
                 }
             }
-            //}
 
             InvalidateVisual();
+        }
+
+        private void render_items(DrawingContext drawingContext)
+        {
+            foreach (object i in Items)
+            {
+                if (i is ObservableCollection<GMapMarker> l)
+                {
+                    foreach (GMapMarker m in l)
+                    {
+                        m.Render(drawingContext);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -952,7 +961,7 @@ namespace GMap.NET.Avalonia
             {
                 if (MapScaleTransform != null)
                 {
-                    var tp = MapScaleTransform.Transform(
+                    Point tp = MapScaleTransform.Transform(
                         new Point(_core.RenderOffset.X, _core.RenderOffset.Y));
                     MapOverlayTranslateTransform.X = tp.X;
                     MapOverlayTranslateTransform.Y = tp.Y;
@@ -1580,6 +1589,7 @@ namespace GMap.NET.Avalonia
                 drawingContext.DrawText(_copyright, new Point(5, Bounds.Height - _copyright.Height - 5));
             }
 
+            render_items(drawingContext);
             #endregion -- copyright --
 
             base.Render(drawingContext);

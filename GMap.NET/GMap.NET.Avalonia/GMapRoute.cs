@@ -18,12 +18,13 @@ namespace GMap.NET.Avalonia
 
     public class GMapRoute : GMapMarker, IShapable
     {
+        public GMapRoute(PointLatLng pos) : base(pos)
+        {
+        }
+
         public List<PointLatLng> Points { get; set; }
 
-        public GMapRoute(IEnumerable<PointLatLng> points)
-        {
-            Points = new List<PointLatLng>(points);
-        }
+
 
         public override void Clear()
         {
@@ -85,6 +86,11 @@ namespace GMap.NET.Avalonia
                 myPath.IsHitTestVisible = false;
             }
             return myPath;
+        }
+
+        public override void Render(DrawingContext drawingContext)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

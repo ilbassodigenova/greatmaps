@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Avalonia;
+using Avalonia.Media;
 using Avalonia.VisualTree;
 
 namespace GMap.NET.Avalonia
@@ -8,7 +9,7 @@ namespace GMap.NET.Avalonia
     /// <summary>
     ///     GMap.NET marker
     /// </summary>
-    public class GMapMarker : INotifyPropertyChanged
+    public abstract class GMapMarker : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -169,10 +170,9 @@ namespace GMap.NET.Avalonia
             }
         }
 
-        int _zIndex;
+        private int _zIndex;
 
-        static readonly PropertyChangedEventArgs ZIndexPropertyChangedEventArgs =
-            new PropertyChangedEventArgs(nameof(ZIndex));
+        private static readonly PropertyChangedEventArgs ZIndexPropertyChangedEventArgs = new(nameof(ZIndex));
 
         /// <summary>
         ///     the index of Z, render order
@@ -193,26 +193,21 @@ namespace GMap.NET.Avalonia
             }
         }
 
-        public GMapMarker(PointLatLng pos)
+        protected GMapMarker(PointLatLng pos)
         {
             Position = pos;
         }
 
-        internal GMapMarker()
-        {
-        }
+
 
         /// <summary>
         ///     calls Dispose on shape if it implements IDisposable, sets shape to null and clears route
         /// </summary>
         public virtual void Clear()
         {
-            var s = Shape as IDisposable;
-            if (s != null)
-            {
-                s.Dispose();
-                s = null;
-            }
+            IDisposable s = Shape as IDisposable;
+            s?.Dispose();
+            s = null;
 
             Shape = null;
         }
@@ -224,13 +219,15 @@ namespace GMap.NET.Avalonia
         {
             if (Map != null)
             {
-                var p = Map.FromLatLngToLocal(Position);
+                GPoint p = Map.FromLatLngToLocal(Position);
                 p.Offset(-(long)Map.MapTranslateTransform.X, -(long)Map.MapTranslateTransform.Y);
 
                 LocalPositionX = (int)(p.X + (long)Offset.X);
                 LocalPositionY = (int)(p.Y + (long)Offset.Y);
             }
         }
+
+        public abstract void Render(DrawingContext drawingContext);
 
         /// <summary>
         ///     forces to update local marker  position

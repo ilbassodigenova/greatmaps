@@ -7,12 +7,13 @@ namespace GMap.NET.Avalonia
 {
     public class GMapPolygon : GMapMarker, IShapable
     {
+        public GMapPolygon(PointLatLng pos) : base(pos)
+        {
+        }
+
         public List<PointLatLng> Points { get; set; }
 
-        public GMapPolygon(IEnumerable<PointLatLng> points)
-        {
-            Points = new List<PointLatLng>(points);
-        }
+
 
         public override void Clear()
         {
@@ -68,6 +69,11 @@ namespace GMap.NET.Avalonia
                 myPath.IsHitTestVisible = false;
             }
             return myPath;
+        }
+
+        public override void Render(DrawingContext drawingContext)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
