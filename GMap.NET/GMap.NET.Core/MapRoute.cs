@@ -7,8 +7,12 @@ using GMap.NET.MapProviders;
 namespace GMap.NET
 {
     /// <summary>
-    ///     represents route of map
+    /// Route is an ordered sequence (collection) of <see cref="PointLatLng"/>.
+    /// Can be associated to a list of instructions.
     /// </summary>
+    /// <remarks>
+    /// Has some interesting features as <see cref="MapRoute.Distance"/> that calculates the route length based on the projection.
+    /// </remarks>
     [Serializable]
     public class MapRoute : ISerializable, IDeserializationCallback
     {

@@ -877,46 +877,27 @@ namespace GMap.NET.Avalonia
         /// <summary>
         ///     regenerates shape of route
         /// </summary>
-        public virtual void RegenerateShape(IShapable s)
+        public virtual void RegenerateShape(GMapRoute s)
         {
-            var marker = s as GMapMarker;
-            if (marker == null)
-                throw new NotSupportedException($"{s.GetType()} shape not supported");
 
             if (s.Points != null && s.Points.Count > 1)
             {
-                marker.Position = s.Points[0];
-                var localPath = new List<Point>(s.Points.Count);
-                var offset = FromLatLngToLocal(s.Points[0]);
+                List<Point> localPath = new List<Point>(s.Points.Count);
+                GPoint offset = FromLatLngToLocal(s.Points[0]);
 
-                foreach (var i in s.Points)
+                foreach (PointLatLng i in s.Points)
                 {
-                    var point = FromLatLngToLocal(i);
+                    GPoint point = FromLatLngToLocal(i);
                     localPath.Add(new Point(point.X - offset.X, point.Y - offset.Y));
                 }
 
-                var shape = s.CreatePath(localPath, true);
-
-                if (marker.Shape is Path p)
-                {
-                    p.Data = shape.Data;
-                }
-                else
-                {
-                    marker.Shape = shape;
-                }
-            }
-            else
-            {
-                marker.Shape = null;
+                Path shape = s.CreatePath(localPath, true);
             }
         }
 
         private void ForceUpdateOverlays(System.Collections.IEnumerable items)
         {
-            //TODO: disable
-            //using (Dispatcher.DisableProcessing())
-            //{
+
             UpdateMarkersOffset();
 
             foreach (object i in items)
@@ -927,11 +908,11 @@ namespace GMap.NET.Avalonia
                     foreach (GMapMarker m in l)
                     {
                         m.ForceUpdateLocalPosition(this);
-                        if (m is IShapable s)
-                        {
-                            RegenerateShape(s);
-                        }
                     }
+                }
+                else if (i is GMapRoute r)
+                {
+                    RegenerateShape(r);
                 }
             }
 

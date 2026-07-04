@@ -1,36 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Avalonia;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 
 namespace GMap.NET.Avalonia
 {
-    public interface IShapable
+    public class GMapRoute : MapRoute, IShapable
     {
-        List<PointLatLng> Points
-        {
-            get;
-            set;
-        }
-
-        Path CreatePath(List<Point> localPath, bool addBlurEffect);
-    }
-
-    public class GMapRoute : GMapMarker, IShapable
-    {
-        public GMapRoute(PointLatLng pos) : base(pos)
+        public GMapRoute(string name) : base(name)
         {
         }
 
-        public List<PointLatLng> Points { get; set; }
-
-
-
-        public override void Clear()
+        public GMapRoute(MapRoute route) : base(route)
         {
-            base.Clear();
-            Points.Clear();
         }
+
+        public GMapRoute(IEnumerable<PointLatLng> points, string name) : base(points, name)
+        {
+        }
+
+        protected GMapRoute(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
 
         /// <summary>
         ///     creates path from list of points, for performance set addBlurEffect to false
@@ -88,7 +81,7 @@ namespace GMap.NET.Avalonia
             return myPath;
         }
 
-        public override void Render(DrawingContext drawingContext)
+        public void Render(DrawingContext drawingContext)
         {
             throw new System.NotImplementedException();
         }

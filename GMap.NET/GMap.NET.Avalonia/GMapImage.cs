@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using GMap.NET.MapProviders;

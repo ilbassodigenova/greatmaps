@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>GMap.NET.WinAvalonia</PackageId>
-        <Product>GMap.NET.WinAvalonia</Product>
-        <AssemblyTitle>GMap.NET.WinAvalonia</AssemblyTitle>
-        <RootNamespace>GMap.NET</RootNamespace>
+        <PackageId>GMap.NET.Avalonia</PackageId>
+        <Product>GMap.NET.Avalonia</Product>
+        <AssemblyTitle>GMap.NET.Avalonia</AssemblyTitle>
+        <RootNamespace>GMap.NET.Avalonia</RootNamespace>
         <Nullable>disable</Nullable>
         <LangVersion>default</LangVersion>
         <TargetFrameworks>net8.0;net10.0</TargetFrameworks>        

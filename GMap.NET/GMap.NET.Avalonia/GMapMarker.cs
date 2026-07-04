@@ -48,7 +48,7 @@ namespace GMap.NET.Avalonia
                     _shape = value;
                     OnPropertyChanged(ShapePropertyChangedEventArgs);
 
-                    UpdateLocalPosition();
+                    update_local_position();
                 }
             }
         }
@@ -69,7 +69,7 @@ namespace GMap.NET.Avalonia
                 if (_position != value)
                 {
                     _position = value;
-                    UpdateLocalPosition();
+                    update_local_position();
                 }
             }
         }
@@ -117,7 +117,7 @@ namespace GMap.NET.Avalonia
                 if (_offset != value)
                 {
                     _offset = value;
-                    UpdateLocalPosition();
+                    update_local_position();
                 }
             }
         }
@@ -213,14 +213,15 @@ namespace GMap.NET.Avalonia
         }
 
         /// <summary>
-        ///     updates marker position, internal access usualy
+        ///     updates marker localposition.
         /// </summary>
-        void UpdateLocalPosition()
+        private void update_local_position()
         {
             if (Map != null)
             {
                 GPoint p = Map.FromLatLngToLocal(Position);
-                p.Offset(-(long)Map.MapTranslateTransform.X, -(long)Map.MapTranslateTransform.Y);
+                // 2026-07-04 Outcommenting this make the marker work
+                //   p.Offset(-(long)Map.MapTranslateTransform.X, -(long)Map.MapTranslateTransform.Y);
 
                 LocalPositionX = (int)(p.X + (long)Offset.X);
                 LocalPositionY = (int)(p.Y + (long)Offset.Y);
@@ -241,7 +242,7 @@ namespace GMap.NET.Avalonia
                 _map = m;
             }
 
-            UpdateLocalPosition();
+            update_local_position();
         }
     }
 }
