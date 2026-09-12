@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using GMap.NET.Internals;
+using GMap.NET.MapProviders.OpenStreetMap;
 using GMap.NET.Projections;
 
 namespace GMap.NET.MapProviders
@@ -58,6 +59,7 @@ namespace GMap.NET.MapProviders
         public static readonly OpenCycleMapProvider OpenCycleMap = OpenCycleMapProvider.Instance;
         public static readonly OpenCycleLandscapeMapProvider OpenCycleLandscapeMap = OpenCycleLandscapeMapProvider.Instance;
         public static readonly OpenCycleTransportMapProvider OpenCycleTransportMap = OpenCycleTransportMapProvider.Instance;
+        public static readonly OpenRailwayMapProvider OpenRailwayMap = OpenRailwayMapProvider.Instance;
 
         public static readonly OpenStreetMapProvider OpenStreetMap = OpenStreetMapProvider.Instance;
         public static readonly OpenStreetMapGraphHopperProvider OpenStreetMapGraphHopper = OpenStreetMapGraphHopperProvider.Instance;
@@ -67,14 +69,14 @@ namespace GMap.NET.MapProviders
         public static readonly OpenStreetMapQuestHybridProvider OpenStreetMapQuestHybrid = OpenStreetMapQuestHybridProvider.Instance;
         public static readonly OpenSeaMapHybridProvider OpenSeaMapHybrid = OpenSeaMapHybridProvider.Instance;
 
-    #if OpenStreetOsm
+#if OpenStreetOsm
         public static readonly OpenStreetOsmProvider OpenStreetOsm = OpenStreetOsmProvider.Instance;
-    #endif
+#endif
 
-    #if OpenStreetMapSurfer
+#if OpenStreetMapSurfer
         public static readonly OpenStreetMapSurferProvider OpenStreetMapSurfer = OpenStreetMapSurferProvider.Instance;
         public static readonly OpenStreetMapSurferTerrainProvider OpenStreetMapSurferTerrain = OpenStreetMapSurferTerrainProvider.Instance;
-    #endif
+#endif
 
         public static readonly WikiMapiaMapProvider WikiMapiaMap = WikiMapiaMapProvider.Instance;
 

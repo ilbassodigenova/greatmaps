@@ -163,9 +163,9 @@ namespace GMap.NET.Internals
 
         public Tile GetTileWithNoLock(int zoom, GPoint p)
         {
-            var ret = Tile.Empty;
+            Tile ret = Tile.Empty;
 
-            //if(zoom < Levels.Count)
+            if (_levels != null)
             {
                 _levels[zoom].TryGetValue(p, out ret);
             }
