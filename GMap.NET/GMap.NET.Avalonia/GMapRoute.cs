@@ -32,9 +32,9 @@ namespace GMap.NET.Avalonia
         public virtual Path CreatePath(List<Point> localPath, bool addBlurEffect)
         {
             // Create a StreamGeometry to use to specify myPath.
-            var geometry = new StreamGeometry();
+            StreamGeometry geometry = new StreamGeometry();
 
-            using (var ctx = geometry.Open())
+            using (StreamGeometryContext ctx = geometry.Open())
             {
                 //ctx.BeginFigure(localPath[0], false, false);
                 //// Draw a line to the next specified point.
@@ -42,7 +42,7 @@ namespace GMap.NET.Avalonia
 
                 ctx.BeginFigure(localPath[0], false);
                 // Draw a line to the next specified point.
-                foreach (var path in localPath)
+                foreach (Point path in localPath)
                 {
                     ctx.LineTo(path);
                 }
@@ -54,7 +54,7 @@ namespace GMap.NET.Avalonia
             //michele
             //geometry.EndBatchUpdate();
             // Create a path to draw a geometry with.
-            var myPath = new Path();
+            Path myPath = new Path();
             {
                 // Specify the shape of the Path using the StreamGeometry.
                 myPath.Data = geometry;
@@ -83,7 +83,8 @@ namespace GMap.NET.Avalonia
 
         public void Render(DrawingContext drawingContext)
         {
-            throw new System.NotImplementedException();
+            Path myPath = new Path();
+            myPath.R
         }
     }
 }
