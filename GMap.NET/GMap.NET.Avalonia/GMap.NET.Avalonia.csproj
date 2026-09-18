@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>GMap.NET.Avalonia</PackageId>
+        <PackageId>Ibdg.GMap.NET.Avalonia</PackageId>
         <Product>GMap.NET.Avalonia</Product>
         <AssemblyTitle>GMap.NET.Avalonia</AssemblyTitle>
         <RootNamespace>GMap.NET.Avalonia</RootNamespace>
@@ -8,6 +8,8 @@
         <LangVersion>default</LangVersion>
         <TargetFrameworks>net8.0;net10.0</TargetFrameworks>        
         <PackageReleaseNotes>
+          - Fixed not displaying routes and markers.
+          https://github.com/ilbassodigenova/greatmaps
         </PackageReleaseNotes>
     </PropertyGroup>
 
