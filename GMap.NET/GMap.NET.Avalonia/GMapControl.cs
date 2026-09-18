@@ -9,7 +9,6 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
-using Avalonia.Controls.Shapes;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml.Templates;
@@ -576,6 +575,12 @@ namespace GMap.NET.Avalonia
             AvaloniaProperty.Register<GMapControl, ObservableCollection<GMapMarker>>(
                 nameof(Markers));
 
+
+        public static readonly StyledProperty<ObservableCollection<GMapRoute>> RoutesProperty =
+            AvaloniaProperty.Register<GMapControl, ObservableCollection<GMapRoute>>(
+                nameof(Routes));
+
+
         /// <summary>
         ///     List of markers
         /// </summary>
@@ -584,6 +589,16 @@ namespace GMap.NET.Avalonia
             get { return GetValue(MarkersProperty); }
             private set { SetValue(MarkersProperty, value); }
         }
+
+        /// <summary>
+        ///     List of markers
+        /// </summary>
+        public ObservableCollection<GMapRoute> Routes
+        {
+            get { return GetValue(RoutesProperty); }
+            private set { SetValue(RoutesProperty, value); }
+        }
+
 
         /// <summary>
         ///     current markers overlay offset
@@ -696,6 +711,7 @@ namespace GMap.NET.Avalonia
                 #endregion -- templates --
 
                 Markers = new ObservableCollection<GMapMarker>();
+                Routes = new ObservableCollection<GMapRoute>();
 
                 ClipToBounds = true;
 
@@ -715,6 +731,7 @@ namespace GMap.NET.Avalonia
                 if (Items.Count == 0)
                 {
                     Items.Add(Markers);
+                    Items.Add(Routes);
                 }
 
                 //TODO: find default value here
@@ -869,7 +886,7 @@ namespace GMap.NET.Avalonia
             return base.MeasureOverride(availableSize);
         }
 
-        private void ForceUpdateOverlays()
+        public void ForceUpdateOverlays()
         {
             ForceUpdateOverlays(Items);
         }
@@ -883,7 +900,7 @@ namespace GMap.NET.Avalonia
             if (s.Points != null && s.Points.Count > 1)
             {
                 List<Point> localPath = new List<Point>(s.Points.Count);
-                GPoint offset = FromLatLngToLocal(s.Points[0]);
+                GPoint offset = new GPoint(0, 0);//  FromLatLngToLocal(s.Points[0]);
 
                 foreach (PointLatLng i in s.Points)
                 {
@@ -891,7 +908,7 @@ namespace GMap.NET.Avalonia
                     localPath.Add(new Point(point.X - offset.X, point.Y - offset.Y));
                 }
 
-                Path shape = s.CreatePath(localPath, true);
+                s.CreatePath(localPath, true);
             }
         }
 
@@ -910,9 +927,12 @@ namespace GMap.NET.Avalonia
                         m.ForceUpdateLocalPosition(this);
                     }
                 }
-                else if (i is GMapRoute r)
+                else if (i is ObservableCollection<GMapRoute> routes)
                 {
-                    RegenerateShape(r);
+                    foreach (GMapRoute r in routes)
+                    {
+                        RegenerateShape(r);
+                    }
                 }
             }
 
@@ -928,6 +948,13 @@ namespace GMap.NET.Avalonia
                     foreach (GMapMarker m in l)
                     {
                         m.Render(drawingContext);
+                    }
+                }
+                if (i is ObservableCollection<GMapRoute> routes)
+                {
+                    foreach (GMapRoute r in routes)
+                    {
+                        r.Render(drawingContext);
                     }
                 }
             }
@@ -1738,7 +1765,7 @@ namespace GMap.NET.Avalonia
 
             if (CanDragMap && e.GetCurrentPoint(this).Properties.PointerUpdateKind == DragButton)
             {
-                var p = e.GetPosition(this);
+                Point p = e.GetPosition(this);
 
                 if (MapScaleTransform != null)
                 {
@@ -1756,7 +1783,7 @@ namespace GMap.NET.Avalonia
             {
                 if (!_isSelected)
                 {
-                    var p = e.GetPosition(this);
+                    Point p = e.GetPosition(this);
                     _isSelected = true;
                     SelectedArea = RectLatLng.Empty;
                     _selectionEnd = PointLatLng.Empty;
@@ -1839,7 +1866,7 @@ namespace GMap.NET.Avalonia
 
             if (!_core.IsDragging && !_core.MouseDown.IsEmpty)
             {
-                var p = e.GetPosition(this);
+                Point p = e.GetPosition(this);
 
                 if (MapScaleTransform != null)
                 {
@@ -1903,17 +1930,17 @@ namespace GMap.NET.Avalonia
 
                 InvalidateVisual(true);
             }
-            else
+            else // not dragging
             {
                 if (_isSelected && !_selectionStart.IsEmpty &&
                     (e.KeyModifiers == KeyModifiers.Shift || e.KeyModifiers == KeyModifiers.Alt ||
                      DisableAltForSelection))
                 {
-                    var p = e.GetPosition(this);
+                    Point p = e.GetPosition(this);
                     _selectionEnd = FromLocalToLatLng((int)p.X, (int)p.Y);
                     {
-                        var p1 = _selectionStart;
-                        var p2 = _selectionEnd;
+                        PointLatLng p1 = _selectionStart;
+                        PointLatLng p2 = _selectionEnd;
 
                         double x1 = Math.Min(p1.Lng, p2.Lng);
                         double y1 = Math.Max(p1.Lat, p2.Lat);

@@ -24,11 +24,48 @@ namespace GMap.NET.Avalonia
         {
         }
 
+        /// <summary>
+        /// Rendering params
+        /// </summary>
+        public IBrush Stroke = Brushes.Navy;
 
         /// <summary>
-        ///     creates path from list of points, for performance set addBlurEffect to false
+        /// Rendering params
         /// </summary>
-        /// <returns></returns>
+        public int StrokeThickness = 5;
+
+        /// <summary>
+        /// Rendering params
+        /// </summary>
+        public PenLineJoin StrokeJoin = PenLineJoin.Round;
+
+        /// <summary>
+        /// Rendering params
+        /// </summary>
+        public PenLineCap StrokeLineCap = PenLineCap.Square;
+
+        /// <summary>
+        /// Rendering params
+        /// </summary>
+        public double Opacity = 0.6;
+
+        /// <summary>
+        /// Rendering params
+        /// </summary>
+        public bool IsHitTestVisible = false;
+
+        /// <summary>
+        /// This is updated by <see cref="CreatePath(List{Point}, bool)"/>. 
+        /// </summary>
+        public Path MyPath { get; set; } = new Path();
+
+
+        /// <summary>
+        ///     creates path from list of points. Path is stored automatically in <see cref="MyPath"/>
+        /// </summary>
+        /// <param name="addBlurEffect">nicer but slower performances</param>
+        /// <param name="localPath">points to draw in local (x-y) coordinates</param>
+        /// <returns>the created path</returns>
         public virtual Path CreatePath(List<Point> localPath, bool addBlurEffect)
         {
             // Create a StreamGeometry to use to specify myPath.
@@ -48,43 +85,35 @@ namespace GMap.NET.Avalonia
                 }
             }
 
-            // Freeze the geometry (make it unmodifiable)
-            // for additional performance benefits.
-            //geometry.Freeze();
-            //michele
-            //geometry.EndBatchUpdate();
             // Create a path to draw a geometry with.
-            Path myPath = new Path();
+            MyPath = new Path();
             {
                 // Specify the shape of the Path using the StreamGeometry.
-                myPath.Data = geometry;
+                MyPath.Data = geometry;
 
                 if (addBlurEffect)
                 {
-                    //BlurEffect ef = new BlurEffect();
-                    //{
-                    //    ef.KernelType = KernelType.Gaussian;
-                    //    ef.Radius = 3.0;
-                    //    ef.RenderingBias = RenderingBias.Performance;
-                    //}
-                    //myPath.Effect = ef;
+                    BlurEffect ef = new BlurEffect();
+                    MyPath.Effect = ef;
                 }
 
-                myPath.Stroke = Brushes.Navy;
-                myPath.StrokeThickness = 5;
-                myPath.StrokeJoin = PenLineJoin.Round;
-                myPath.StrokeLineCap = PenLineCap.Square;
-                //myPath.StrokeEndLineCap = PenLineCap.Square;
-                myPath.Opacity = 0.6;
-                myPath.IsHitTestVisible = false;
+                MyPath.Stroke = Stroke;
+                MyPath.StrokeThickness = StrokeThickness;
+                MyPath.StrokeJoin = StrokeJoin;
+                MyPath.StrokeLineCap = StrokeLineCap;
+                MyPath.Opacity = Opacity;
+                MyPath.IsHitTestVisible = IsHitTestVisible;
             }
-            return myPath;
+            return MyPath;
         }
 
+        /// <summary>
+        /// renders on graphic context.
+        /// </summary>
+        /// <param name="drawingContext"></param>
         public void Render(DrawingContext drawingContext)
         {
-            Path myPath = new Path();
-            myPath.R
+            MyPath.Render(drawingContext);
         }
     }
 }
